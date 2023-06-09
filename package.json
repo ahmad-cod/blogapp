@@ -4,7 +4,8 @@
   "description": "An exercise from fullstack open",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js node --trace-warnings"
   },
   "keywords": [
     "node.js",
