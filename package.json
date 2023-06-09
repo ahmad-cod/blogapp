@@ -1,0 +1,24 @@
+{
+  "name": "blog_list_app",
+  "version": "1.0.0",
+  "description": "An exercise from fullstack open",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node.js",
+    "javascript",
+    "fullstack",
+    "mongo",
+    "backend"
+  ],
+  "author": "Ahmad Aroyehun",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.1.4",
+    "express": "^4.18.2",
+    "mongoose": "^7.2.2"
+  }
+}
