@@ -4,8 +4,9 @@
   "description": "An exercise from fullstack open",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js node --trace-warnings"
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js node --trace-warnings",
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand"
   },
   "keywords": [
     "node.js",
@@ -18,8 +19,19 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.1.4",
     "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
     "mongoose": "^7.2.2"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "supertest": "^6.3.3"
+  },
+  "jest": {
+    "testEnvironment": "node",
+  
+    "globalTeardown": "./tests/teardown.js"
   }
 }
