@@ -1,4 +1,5 @@
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const initialBlogs = [
     {
@@ -15,6 +16,19 @@ const initialBlogs = [
     }
 ]
 
+const initialUsers = [
+    {
+        name: "Idowu Hellas",
+        username: "idowu",
+        password: "idowu"
+    },
+    {
+        name: "Yusuf Mentor",
+        username: "yusuf",
+        password: "yusuf"
+    }
+]
+
 const resetDb = async () => {
     await Blog.deleteMany({})
     let blog = new Blog(initialBlogs[0])
@@ -27,8 +41,21 @@ const blogsInDb = async () => {
     return blogs.map(blog => blog.toJSON())
 }
 
+const resetUsersDb = async () => {
+    await User.deleteMany({})
+
+    await User.insertMany(initialUsers)
+}
+
+const usersInDb = async () => {
+    const users = await User.find({})
+    return users.map(user => user.toJSON())
+}
+
 module.exports = {
     initialBlogs,
+    initialUsers,
+    resetUsersDb,
     blogsInDb,
     resetDb
 }
