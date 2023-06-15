@@ -30,11 +30,9 @@ const initialUsers = [
 ]
 
 const resetDb = async () => {
+    await User.deleteMany({})
     await Blog.deleteMany({})
-    let blog = new Blog(initialBlogs[0])
-    await blog.save()
-    blog = new Blog(initialBlogs[1])
-    await blog.save()
+    await Blog.insertMany(initialBlogs)
 }
 const blogsInDb = async () => {
     const blogs = await Blog.find({})

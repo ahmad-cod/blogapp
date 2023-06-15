@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const supertest = require('supertest')
 const app = require('../app')
 const { resetDb, initialBlogs, blogsInDb } = require('./test_helper')
@@ -8,39 +9,83 @@ const api = supertest(app)
 
 beforeEach(resetDb, 30000)
 
-test('should have 2 notes', async () => {
-    const response = await api.get('/api/blogs')
-
-    expect(response.body).toHaveLength(initialBlogs.length)
-})
-
-test('each blog post has an id processed', async () => {
-    const response = await api.get('/api/blogs')
-    response.body.forEach(blog => {
-        expect(blog.id).toBeDefined()
+describe('get blog', () => {
+    test('should have 2 notes', async () => {
+        const response = await api.get('/api/blogs')
+    
+        expect(response.body).toHaveLength(initialBlogs.length)
+    })
+    
+    test('each blog post has an id processed', async () => {
+        const response = await api.get('/api/blogs')
+        response.body.forEach(blog => {
+            expect(blog.id).toBeDefined()
+        })
     })
 })
 
-test('should add a valid blog', async () => {
-    const newBlog = {
-        title: 'Test Blog',
-        author: "Idowu Hellas",
-        url: "https://www.google.com",
-        likes: 1
-    }
+describe('Add a blog', () => {
+    let headers
 
-    await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
+    beforeEach(async () => {
+        const newUser = {
+            username: 'test',
+            password: 'test'
+        }
+        await api
+            .post('/api/users')
+            .send(newUser)
 
-    const blogsAtEnd = await blogsInDb()
-    expect(blogsAtEnd).toHaveLength(initialBlogs.length + 1)
+        const result = await api
+                        .post('/api/login')
+                        .send(newUser)
+        
+        headers = {
+            'Authorization': `Bearer ${result.body.token}`
+        }
+    })
 
-    const blogTitles = blogsAtEnd.map(b => b.title)
-    expect(blogTitles).toContain('Test Blog')
+    test('succeeds with a valid token', async () => {
+        const blogsAtStart = await blogsInDb()
+    
+        const newBlog = {
+            title: 'Test Blog',
+            author: "Wahab Hellas",
+            url: "https://www.google.com",
+            likes: 1
+        }
+    
+        await api
+            .post('/api/blogs')
+            .set(headers)
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+    
+        const blogsAtEnd = await blogsInDb()
+        expect(blogsAtEnd).toHaveLength(blogsAtStart.length + 1)
+    
+        const blogTitles = blogsAtEnd.map(b => b.title)
+        expect(blogTitles).toContain('Test Blog')
+    }, 30000)
+
+    test.only('fails with an invalid token', async () => {
+        const newBlog = {
+            title: 'Test Blog',
+            author: "Wahab Hellas",
+            url: "https://www.google.com",
+            likes: 1
+        }
+
+        await api
+            .post('/api/blogs')
+            .set({'Authorization': 'Google'})
+            .send(newBlog)
+            .expect(401)
+            .expect('Content-Type', /application\/json/)
+    }, 30000)
 })
+
 
 test('should return 0 as default value for likes not defined in the request body', async () => {
     const newBlog = {
@@ -78,7 +123,7 @@ describe('deletion of a blog', () => {
 })
 
 describe('updating a blog', () => {
-    test.only('succeeds with a valid id', async () => {
+    test('succeeds with a valid id', async () => {
         const blogsAtStart = await blogsInDb()
         const blogToUpdate = blogsAtStart[0]
     
@@ -101,4 +146,4 @@ describe('updating a blog', () => {
 
 afterAll(async () => {
     await mongoose.connection.close()
-})
+}, 30000)

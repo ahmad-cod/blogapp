@@ -15,15 +15,8 @@ blogsRouter.get('/:id', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
-    
-    // const decodedToken = jwt.verify(request.token, process.env.JWT_SECRET)
-
-    // if(!decodedToken.id) {
-    //     return response.status(401).json({ error: 'Invalid token' })
-    // }
-    // const user = await User.findById(decodedToken.id)
-
     const user = request.user
+    if(!user) return response.status(401).json({ error: 'Not logged in' })
 
     console.log('user', user)
 
