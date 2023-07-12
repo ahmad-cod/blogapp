@@ -15,35 +15,52 @@ blogsRouter.get('/:id', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
-    const user = request.user
-    if(!user) return response.status(401).json({ error: 'Not logged in' })
-
-    console.log('user', user)
-
-    const blog = new Blog({
-        title: request.body.title,
-        author: request.body.author,
-        url: request.body.url,
-        likes: request.body.likes || 0,
-        user: user.id
-    })
-
-    const savedBlog = await blog.save()
-
-    user.blogs = user.blogs.concat(savedBlog._id)
-    await user.save()
-
-    response.status(201).json(savedBlog)
-})
+    try {
+      const user = request.user
+      if (!user) {
+        return response.status(401).json({ error: 'Not logged in' })
+      }
+  
+      const { title, author, url, likes = 0 } = request.body
+  
+      const blog = new Blog({
+        title,
+        author,
+        url,
+        likes,
+        user: user.id,
+      })
+  
+      const savedBlog = await blog.save();
+      const populatedBlog = await Blog.findById(savedBlog.id).populate('user')
+  
+      user.blogs = user.blogs.concat(savedBlog._id);
+      await user.save();
+  
+      response.status(201).json(populatedBlog)
+    } catch (error) {
+      response.status(500).json({ error: 'An error occurred' })
+    }
+  });
+  
 
 blogsRouter.put('/:id', async (request, response) => {
-    const blog = await Blog.findByIdAndUpdate(request.params.id, request.body, { new: true })
+  const { likes, comments } = request.body
+  const updates = {}
+  if(likes) {
+    updates.likes = likes
+  }
+  if(comments) {
+    updates.comments = comments
+  }
 
-    if(blog) {
-        response.json(blog)
-    } else {
-        response.status(404).end()
-    }
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, updates, { new: true })
+
+  if(updatedBlog) {
+      response.json(updatedBlog)
+  } else {
+      response.status(404).end()
+  }
 })
 
 blogsRouter.delete('/:id', async (request, response) => {

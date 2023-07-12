@@ -5,6 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
+    "build:ui": "rm -rf dist && cd ../part7/blogapp-frontend && npm run build && cp -r dist ../../part4",
+    "deploy": "git add . && git commit -m ui-build && git push",
+    "deploy:full": "npm run build:ui && npm run deploy",
     "dev": "cross-env NODE_ENV=development nodemon index.js node --trace-warnings",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand"
   },

@@ -9,8 +9,8 @@ const initialBlogs = [
         likes: 1
     },
     {
-        title: "Blog 2",
-        author: "Idowu Hellas",
+        title: "7 Habits of highly successful people",
+        author: "Steven Covey",
         url: "https://www.google.com",
         likes: 2
     }
