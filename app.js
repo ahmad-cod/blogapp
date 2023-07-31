@@ -12,7 +12,7 @@ const logger = require('./utils/logger')
 const { requestLogger, extractUser, unknownEndpoint, errorHandler } = require('./utils/middleware')
 
 logger.info('connecting to', config.MONGODB_URI)
-mongoose.connect(config.MONGODB_URI)
+mongoose.connect(config.MONGODB_URI, { bufferTimeoutMS: 30000 })
     .then(() => logger.info('connected to database'))
     .catch(err => logger.error('error connecting to database', err))
 
